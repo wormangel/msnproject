@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project default="gerarJar" basedir="." name="MSNProject">
+
+	<target name="gerarJar" depends="" description="Cria um arquivo Jar do Projeto de MSN.">
+		<delete file="msnproject.jar" />
+		<jar destfile="msnproject.jar" basedir=".">
+			<fileset dir="./bin">
+				<include name="exceptions/*.class" />
+				<include name="gui/*.class" />
+				<include name="methods/*.class" />
+				<include name="misc/*.class" />
+				<include name="newtonRaphson/*.class" />
+				<include name="util/*.class" />
+				<include name="secante/*.class" />
+				<include name="background.jpg" />
+			</fileset>
+			<include name="build" />
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="gui.MSNLab" />
+				<attribute name="Class-Path" value="lib/jterm.jar lib/mathExpr.jar 
+					lib/mfc.jar lib/jcommon-1.0.13.jar lib/jfreechart-1.0.10.jar 
+					lib/numericalMethods.jar"/>
+				<attribute name="Java-Bean" value="True" />
+			</manifest>
+		</jar>
+	</target>
+
+
+</project>
