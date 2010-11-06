@@ -14,6 +14,7 @@ import br.edu.ufcg.msnlab.gui.MSNLab;
 /**
  * @author Alfeu Buriti Pereira Júnior.
  * @author Brunno José Guimarães de Almeida.
+ * @author Otacilio Freitas de Lacerda
  */
 public class FrameAbout extends JInternalFrame {
 
@@ -60,6 +61,8 @@ public class FrameAbout extends JInternalFrame {
         vetorInterface.add("Samuel de Barros Florentino");
         vetorInterface.add("Erick Moreno Marques Almeida");
         vetorInterface.add("Andrea Alves Nascimento");
+        vetorInterface.add("Lucas Medeiros de Azevedo (Petkovic)");
+        vetorInterface.add("Otacilio Freitas de Lacerda (Petkovic)");
         listInterface.setListData(vetorInterface);
 
         Vector<String> vetorMethods = new Vector<String>();
@@ -75,6 +78,8 @@ public class FrameAbout extends JInternalFrame {
         vetorMethods.add("Carla Souza");
         vetorMethods.add("Gabriel de Lima Feitosa");
         vetorMethods.add("Raphael Pessoa");
+        vetorMethods.add("Lucas Medeiros de Azevedo (Petkovic)");
+        vetorMethods.add("Otacilio Freitas de Lacerda (Petkovic)");
         listMethoods.setListData(vetorMethods);
     }
 

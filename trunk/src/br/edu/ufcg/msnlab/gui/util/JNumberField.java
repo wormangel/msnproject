@@ -38,8 +38,6 @@ public class JNumberField extends JTextField {
                         || (str.charAt(i) == 45))
                     entrada += str.charAt(i);
             }
-            if (entrada == null)
-                return;
             super.insertString(offs, entrada, a);
         }
     }

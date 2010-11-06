@@ -3,6 +3,7 @@ package br.edu.ufcg.msnlab.methods;
 /**
  * @author Alfeu Buriti Pereira Júnior.
  * @author Brunno José Guimarães de Almeida.
+ * @author Otacilio Freitas de Lacerda
  */
 public class Methods {
 
@@ -20,5 +21,7 @@ public class Methods {
     public static final String RIDDERS = "Ridders";
     public static final String LAGUERRE = "Laguerre";
     public static final String VANWIJNGAARDENDEKKERBRENT = "Van Wijngaarden-Dekker-Brent";
+    public static final String PETKOVIC = "Petkovic";
+    public static final String PETKOVICSIMULTANEO = "Petkovic Simultaneo";
 
 }

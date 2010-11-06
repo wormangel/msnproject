@@ -43,8 +43,6 @@ public class JDecimalField extends JTextField {
                 else if ((str.charAt(i) == 44))
                     entrada += ".";
             }
-            if (entrada == null)
-                return;
             super.insertString(offs, entrada, a);
         }
     }
