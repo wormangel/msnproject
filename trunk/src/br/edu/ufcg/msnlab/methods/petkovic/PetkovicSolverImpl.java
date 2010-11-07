@@ -28,7 +28,7 @@ public class PetkovicSolverImpl implements PetkovicSolver {
     public List<PetkovicResult> petkovic(Function g, double guess, double tolerance, double maxIterations) throws Exception{
 		
         boolean testConv = true;
-        double iterN = 0;
+        double iterN = 1;
         
         Complex diff = new Complex(1e300);        
         Complex complexGuess = new Complex(guess);
@@ -41,15 +41,18 @@ public class PetkovicSolverImpl implements PetkovicSolver {
 	    if(isNaN(f[0]) || isNaN(f[1])){
 	    	results.add(new PetkovicResultImpl(new Complex(Double.NaN)));
 	    }
+
         while(testConv){
-            diff = f[0].divide(f[1]);
-            results.add(new PetkovicResultImpl(f[0]));
-            if(f[0].equals(0.0D) || diff.abs()<this.tolerance){
-                this.root = complexGuess;
-                results.add(new PetkovicResultImpl(this.root));
+        	results.add(new PetkovicResultImpl(complexGuess)); // adiciona a estimativa da vez
+        	
+        	diff = f[0].divide(f[1]);
+            if(f[0].equals(new Complex(0)) || diff.abs()<this.tolerance || iterN>this.maxIterations-1){
+            	this.root = complexGuess;
                 testConv=false;
             }
             else{
+            	iterN++;
+            	
             	Complex fDeXmenosDerivada = g.calculate(complexGuess.minus(diff));
             	Complex valorDentroRaiz = new Complex(1).minus( fDeXmenosDerivada.times(4).divide(f[0]) );
             	
@@ -68,12 +71,7 @@ public class PetkovicSolverImpl implements PetkovicSolver {
 	            	results.add(new PetkovicResultImpl(new Complex(Double.NaN)));
 	            }
             }
-            iterN++;
-            if(iterN>this.maxIterations){
-                this.root = complexGuess;
-                results.add(new PetkovicResultImpl(this.root));
-                testConv = false;
-            }
+
         }
         return results;
     }
