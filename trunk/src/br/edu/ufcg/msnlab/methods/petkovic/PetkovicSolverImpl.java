@@ -12,7 +12,7 @@ import br.edu.ufcg.msnlab.misc.Function;
  */
 public class PetkovicSolverImpl implements PetkovicSolver {
 	
-	private double root = Double.NaN;
+	private Complex root = new Complex(Double.NaN);
     private double tolerance = 0;
     private double maxIterations = 3000;
 	
@@ -29,45 +29,48 @@ public class PetkovicSolverImpl implements PetkovicSolver {
 		
         boolean testConv = true;
         double iterN = 0;
-        double diff = 1e300;
-	    double[] f = {g.calculate(guess), g.derivative().calculate(guess)};
+        
+        Complex diff = new Complex(1e300);        
+        Complex complexGuess = new Complex(guess);
+        
+	    Complex[] f = {g.calculate(complexGuess), g.derivative().calculate(complexGuess)};
 	    this.tolerance = tolerance;
 	    this.maxIterations = maxIterations;
 	    List<PetkovicResult> results = new ArrayList<PetkovicResult>();
 
 	    if(isNaN(f[0]) || isNaN(f[1])){
-	    	results.add(new PetkovicResultImpl(Double.NaN));
+	    	results.add(new PetkovicResultImpl(new Complex(Double.NaN)));
 	    }
         while(testConv){
-            diff = f[0]/f[1];
+            diff = f[0].divide(f[1]);
             results.add(new PetkovicResultImpl(f[0]));
-            if(f[0]==0.0D || Math.abs(diff)<this.tolerance){
-                this.root = guess;
+            if(f[0].equals(0.0D) || diff.abs()<this.tolerance){
+                this.root = complexGuess;
                 results.add(new PetkovicResultImpl(this.root));
                 testConv=false;
             }
             else{
-            	double fDeXmenosDerivada = g.calculate(guess - diff);
-            	double valorDentroRaiz = 1 - ( 4 * fDeXmenosDerivada / f[0] );
+            	Complex fDeXmenosDerivada = g.calculate(complexGuess.minus(diff));
+            	Complex valorDentroRaiz = new Complex(1).minus( fDeXmenosDerivada.times(4).divide(f[0]) );
             	
-            	double numerator = 2 * diff;
-            	double valorDaRaiz;
+            	Complex numerator = diff.times(2);
+            	Complex valorDaRaiz;
             	
-            	valorDaRaiz = new Complex(valorDentroRaiz).sqrt().re;
+            	valorDaRaiz = valorDentroRaiz.sqrt();
             	
-            	double denominator = 1 - valorDaRaiz;
+            	Complex  denominator = new Complex(1).minus(valorDaRaiz).abs() > new Complex(1).plus(valorDaRaiz).abs() ? new Complex(1).minus(valorDaRaiz) : new Complex(1).plus(valorDaRaiz);
             	
-                guess -= numerator / denominator;
+                complexGuess = complexGuess.minus(numerator.divide(denominator));
                 
-                f[0] = g.calculate(guess);
-                f[1] = g.derivative().calculate(guess);
+                f[0] = g.calculate(complexGuess);
+                f[1] = g.derivative().calculate(complexGuess);
 	            if(isNaN(f[0]) || isNaN(f[1])){
-	            	results.add(new PetkovicResultImpl(Double.NaN));
+	            	results.add(new PetkovicResultImpl(new Complex(Double.NaN)));
 	            }
             }
             iterN++;
             if(iterN>this.maxIterations){
-                this.root = guess;
+                this.root = complexGuess;
                 results.add(new PetkovicResultImpl(this.root));
                 testConv = false;
             }
@@ -75,6 +78,10 @@ public class PetkovicSolverImpl implements PetkovicSolver {
         return results;
     }
 	
+	private boolean isNaN(Complex complex) {
+		return complex.isNaN();
+	}
+
 	/**
 	 * Verify if a double is a NaN.
 	 * @param x The double to be verified.
