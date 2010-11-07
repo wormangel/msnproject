@@ -1,5 +1,6 @@
 package br.edu.ufcg.msnlab.methods.petkovic;
 
+import mfc.field.Complex;
 import br.edu.ufcg.msnlab.methods.Result;
 
 /**
@@ -13,5 +14,7 @@ public interface PetkovicResult extends Result {
 	 * @return x
 	 */
 	public double getX();
+	
+	public String getComplexX();
 
 }

@@ -58,7 +58,7 @@ public class PetkovicTableModel extends AbstractTableModel {
             return (row + 1) + "";
         }
         case X: {
-            return bs.getX() + "";
+            return bs.getComplexX() + "";
         }
         }
         return "";
