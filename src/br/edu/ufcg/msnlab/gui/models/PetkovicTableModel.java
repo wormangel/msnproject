@@ -9,7 +9,8 @@ import br.edu.ufcg.msnlab.methods.petkovic.PetkovicResult;
 
 
 /**
- * @author Otacilio Freitas de Lacerda
+ * @author Otacilio Freitas de Lacerda.
+ * @author Lucas Medeiros de Azevedo.
  */
 public class PetkovicTableModel extends AbstractTableModel {
 

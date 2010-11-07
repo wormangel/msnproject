@@ -4,6 +4,7 @@ import br.edu.ufcg.msnlab.methods.Result;
 
 /**
  * @author Otacilio Freitas de Lacerda
+ * @author Lucas Medeiros de Azevedo.
  */
 public interface PetkovicResult extends Result {
 	
