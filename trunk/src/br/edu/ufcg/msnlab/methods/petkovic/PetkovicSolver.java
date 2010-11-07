@@ -7,6 +7,7 @@ import br.edu.ufcg.msnlab.misc.Function;
 
 /**
  * @author Otacilio Freitas de Lacerda
+ * @author Lucas Medeiros de Azevedo.
  */
 public interface PetkovicSolver extends Solver<PetkovicResult> {
 

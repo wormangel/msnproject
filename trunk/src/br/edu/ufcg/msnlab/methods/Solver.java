@@ -29,7 +29,8 @@ public interface Solver<T> {
 	 * @param funcion
 	 * @param tolerance
 	 * @return
+	 * @throws Exception 
 	 */
-	public List<T> solve(Function funcion, double tolerance);
+	public List<T> solve(Function funcion, double tolerance) throws Exception;
 
 }

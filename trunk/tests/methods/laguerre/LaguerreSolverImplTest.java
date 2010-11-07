@@ -40,7 +40,7 @@ public class LaguerreSolverImplTest extends TestCase {
 		
 	}
 	
-	private void verifyFunction(Function f, double tol) {
+	private void verifyFunction(Function f, double tol) throws Exception {
 		List<LaguerreResult> results = laguerre.solve(f, tol);
 		Complex lastX = results.get(results.size()-1).getComplexX();
 		Complex lastResult = f.calculate(lastX);
