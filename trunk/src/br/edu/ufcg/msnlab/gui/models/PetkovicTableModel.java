@@ -19,7 +19,8 @@ public class PetkovicTableModel extends AbstractTableModel {
     private List<PetkovicResult> results;
 
     public static final int ITERATION = 0;
-    public static final int X = 1;
+    public static final int X_COMPLEX = 1;
+    public static final int X_REAL = 2;
 
     public PetkovicTableModel() {
         results = new ArrayList<PetkovicResult>();
@@ -30,7 +31,7 @@ public class PetkovicTableModel extends AbstractTableModel {
     }
 
     public int getColumnCount() {
-        return 2;
+        return 3;
     }
 
     public int getRowCount() {
@@ -57,9 +58,12 @@ public class PetkovicTableModel extends AbstractTableModel {
         case ITERATION: {
             return (row + 1) + "";
         }
-        case X: {
+        case X_COMPLEX: {
             return bs.getComplexX() + "";
         }
+        case X_REAL: {
+        	return bs.getX() + "";
+        }        
         }
         return "";
     }
@@ -68,9 +72,10 @@ public class PetkovicTableModel extends AbstractTableModel {
         switch (column) {
         case ITERATION:
             return "#";
-        case X:
-            return "X";
-
+        case X_COMPLEX:
+            return "X (complex)";
+        case X_REAL:
+        	return "X (real)";
         }
         return "";
     }
