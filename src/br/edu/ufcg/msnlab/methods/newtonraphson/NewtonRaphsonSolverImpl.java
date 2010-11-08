@@ -9,6 +9,7 @@ import br.edu.ufcg.msnlab.misc.Function;
  * 
  * @author Marcus Leite
  * @author Alvaro Magnum
+ * @author Lucas Medeiros de Azevedo
  *
  */
 public class NewtonRaphsonSolverImpl implements NewtonRaphsonSolver {
@@ -28,7 +29,7 @@ public class NewtonRaphsonSolverImpl implements NewtonRaphsonSolver {
     public List<NewtonRaphsonResult> newtonRaphson(Function g, double guess, double tolerance, double maxIterations){
 		
         boolean testConv = true;
-        double iterN = 0;
+        double iterN = 1;
         double diff = 1e300;
 	    double[] f = {g.calculate(guess), g.derivative().calculate(guess)};
 	    this.tolerance = tolerance;
@@ -39,26 +40,21 @@ public class NewtonRaphsonSolverImpl implements NewtonRaphsonSolver {
 	    	results.add(new NewtonRaphsonResultImpl(Double.NaN));
 	    }
         while(testConv){
+            results.add(new NewtonRaphsonResultImpl(guess));
+            
             diff = f[0]/f[1];
-            results.add(new NewtonRaphsonResultImpl(f[0]));
-            if(f[0]==0.0D || Math.abs(diff)<this.tolerance){
+            if(f[0]==0.0D || Math.abs(diff)<this.tolerance || iterN>this.maxIterations-1){
                 this.root = guess;
-                results.add(new NewtonRaphsonResultImpl(this.root));
                 testConv=false;
             }
             else{
+            	iterN++;
                 guess -= diff;
                 f[0] = g.calculate(guess);
                 f[1] = g.derivative().calculate(guess);
 	            if(isNaN(f[0]) || isNaN(f[1])){
 	            	results.add(new NewtonRaphsonResultImpl(Double.NaN));
 	            }
-            }
-            iterN++;
-            if(iterN>this.maxIterations){
-                this.root = guess;
-                results.add(new NewtonRaphsonResultImpl(this.root));
-                testConv = false;
             }
         }
         return results;
