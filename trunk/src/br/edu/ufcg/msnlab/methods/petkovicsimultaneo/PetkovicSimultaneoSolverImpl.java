@@ -2,6 +2,8 @@ package br.edu.ufcg.msnlab.methods.petkovicsimultaneo;
 
 import java.util.*;
 
+import mfc.field.Complex;
+
 import br.edu.ufcg.msnlab.misc.Function;
 
 /**
@@ -58,6 +60,9 @@ public class PetkovicSimultaneoSolverImpl implements PetkovicSimultaneoSolver {
 //            }
 //        }
 //        return results;
+    	
+    	
+    	
     	return null;
     }
 	

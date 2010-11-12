@@ -45,26 +45,29 @@ public class PetkovicSolverImpl implements PetkovicSolver {
         while(testConv){
         	results.add(new PetkovicResultImpl(complexGuess)); // adiciona a estimativa da vez
         	
-        	diff = f[0].divide(f[1]);
+        	Complex diffNewton = f[0].divide(f[1]);
+        	
+        	Complex fDeXmenosDerivada = g.calculate(complexGuess.minus(diffNewton));
+        	Complex valorDentroRaiz = new Complex(1).minus( fDeXmenosDerivada.times(4).divide(f[0]) );
+        	
+        	Complex numerator = diffNewton.times(2);
+        	Complex valorDaRaiz;
+        	
+        	valorDaRaiz = valorDentroRaiz.sqrt();
+        	
+        	Complex  denominator = new Complex(1).minus(valorDaRaiz).abs() > new Complex(1).plus(valorDaRaiz).abs() ? new Complex(1).minus(valorDaRaiz) : new Complex(1).plus(valorDaRaiz);
+        	
+        	diff = numerator.divide(denominator); 
+        	
+            complexGuess = complexGuess.minus(diff);        	
+        	
             if(f[0].equals(new Complex(0)) || diff.abs()<this.tolerance || iterN>this.maxIterations-1){
             	this.root = complexGuess;
                 testConv=false;
             }
             else{
             	iterN++;
-            	
-            	Complex fDeXmenosDerivada = g.calculate(complexGuess.minus(diff));
-            	Complex valorDentroRaiz = new Complex(1).minus( fDeXmenosDerivada.times(4).divide(f[0]) );
-            	
-            	Complex numerator = diff.times(2);
-            	Complex valorDaRaiz;
-            	
-            	valorDaRaiz = valorDentroRaiz.sqrt();
-            	
-            	Complex  denominator = new Complex(1).minus(valorDaRaiz).abs() > new Complex(1).plus(valorDaRaiz).abs() ? new Complex(1).minus(valorDaRaiz) : new Complex(1).plus(valorDaRaiz);
-            	
-                complexGuess = complexGuess.minus(numerator.divide(denominator));
-                
+
                 f[0] = g.calculate(complexGuess);
                 f[1] = g.derivative().calculate(complexGuess);
 	            if(isNaN(f[0]) || isNaN(f[1])){
