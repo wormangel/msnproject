@@ -16,5 +16,7 @@ public interface PetkovicResult extends Result {
 	public double getX();
 	
 	public String getComplexX();
+	
+	public boolean isComplex();
 
 }
