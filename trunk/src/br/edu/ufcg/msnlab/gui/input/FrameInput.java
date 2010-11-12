@@ -30,7 +30,6 @@ import br.edu.ufcg.msnlab.gui.models.GoldenRatioTableModel;
 import br.edu.ufcg.msnlab.gui.models.LaguerreTableModel;
 import br.edu.ufcg.msnlab.gui.models.MullerTableModel;
 import br.edu.ufcg.msnlab.gui.models.NewtonRaphsonTableModel;
-import br.edu.ufcg.msnlab.gui.models.PetkovicSimultaneoTableModel;
 import br.edu.ufcg.msnlab.gui.models.PetkovicTableModel;
 import br.edu.ufcg.msnlab.gui.models.RiddersTableModel;
 import br.edu.ufcg.msnlab.gui.models.SecantTableModel;
@@ -75,9 +74,6 @@ import br.edu.ufcg.msnlab.methods.newtonraphson.NewtonRaphsonSolverImpl;
 import br.edu.ufcg.msnlab.methods.petkovic.PetkovicResult;
 import br.edu.ufcg.msnlab.methods.petkovic.PetkovicSolver;
 import br.edu.ufcg.msnlab.methods.petkovic.PetkovicSolverImpl;
-import br.edu.ufcg.msnlab.methods.petkovicsimultaneo.PetkovicSimultaneoResult;
-import br.edu.ufcg.msnlab.methods.petkovicsimultaneo.PetkovicSimultaneoSolver;
-import br.edu.ufcg.msnlab.methods.petkovicsimultaneo.PetkovicSimultaneoSolverImpl;
 import br.edu.ufcg.msnlab.methods.ridders.RiddersResult;
 import br.edu.ufcg.msnlab.methods.ridders.RiddersSolver;
 import br.edu.ufcg.msnlab.methods.ridders.RiddersSolverImpl;
@@ -229,7 +225,6 @@ public class FrameInput extends JInternalFrame {
 		combo.addItem(Methods.SECANT);
 		combo.addItem(Methods.VANWIJNGAARDENDEKKERBRENT);
 		combo.addItem(Methods.PETKOVIC);
-		combo.addItem(Methods.PETKOVICSIMULTANEO);
 		return combo;
 	}
 
@@ -342,8 +337,7 @@ public class FrameInput extends JInternalFrame {
 
 				} else if (method.equals(Methods.LAGUERRE)
 						|| method.equals(Methods.NEWTONRAPHSON)
-						|| method.equals(Methods.PETKOVIC)
-						|| method.equals(Methods.PETKOVICSIMULTANEO)) {
+						|| method.equals(Methods.PETKOVIC)) {
 					textGuess.setVisible(true);
 					textIterations.setVisible(true);
 					textMax.setVisible(false);
@@ -926,41 +920,7 @@ public class FrameInput extends JInternalFrame {
 						msnlab.showError(e.getMessage());
 					}
 				}
-			} else if (method.equals(Methods.PETKOVICSIMULTANEO)) {
-				//TODO: Resultado de copia, o codigo abaixo esta ai para exemplo
-				if (fieldGuess.getText().trim().equals("")) {
-					msnlab.showError("Guess cannot be empty.");
-					return;
-				} else {
-					double tolerance = Double.parseDouble(fieldTolerance
-							.getText());
-					PetkovicSimultaneoSolver pk = new PetkovicSimultaneoSolverImpl();
-					double guess = Double.parseDouble(fieldGuess.getText());
-					int iterations = 0;
-					try {
-						iterations = Integer.parseInt(fieldIteration.getText());
-					} catch (Exception e) {
-					}
-					try {
-						List<PetkovicSimultaneoResult> result;
-						if (iterations == 0) {
-							result = pk.solve(function, guess, tolerance);
-						} else {
-							result = pk.solve(function, guess, tolerance,
-									iterations);
-						}
-						PetkovicSimultaneoTableModel pstm = new PetkovicSimultaneoTableModel(
-								result);
-						FrameOutput fo = new FrameOutput(msnlab);
-						fo.setModel(pstm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					} catch (Exception e) {
-						msnlab.showError(e.getMessage());
-					}
-				}
-			}
-
+			} 
 		} catch (InvalidFunctionException e1) {
 			msnlab.showError(e1.getMessage());
 		} catch (NumberFormatException e1) {
