@@ -22,6 +22,4 @@ public class Methods {
     public static final String LAGUERRE = "Laguerre";
     public static final String VANWIJNGAARDENDEKKERBRENT = "Van Wijngaarden-Dekker-Brent";
     public static final String PETKOVIC = "Petkovic";
-    public static final String PETKOVICSIMULTANEO = "Petkovic Simultaneo";
-
 }
