@@ -12,7 +12,6 @@ import br.edu.ufcg.msnlab.misc.Function;
  */
 public class PetkovicSolverImpl implements PetkovicSolver {
 	
-	private Complex root = new Complex(Double.NaN);
     private double tolerance = 0;
     private double maxIterations = 3000;
 	
@@ -62,7 +61,6 @@ public class PetkovicSolverImpl implements PetkovicSolver {
             complexGuess = complexGuess.minus(diff);        	
         	
             if(f[0].equals(new Complex(0)) || diff.abs()<this.tolerance || iterN>this.maxIterations-1){
-            	this.root = complexGuess;
                 testConv=false;
             }
             else{
@@ -82,17 +80,6 @@ public class PetkovicSolverImpl implements PetkovicSolver {
 	private boolean isNaN(Complex complex) {
 		return complex.isNaN();
 	}
-
-	/**
-	 * Verify if a double is a NaN.
-	 * @param x The double to be verified.
-	 * @return True if is NaN, false otherwise.
-	 */
-    private boolean isNaN(double x){
-        boolean test=false;
-        if(x!=x)test=true;
-        return test;
-    }
 
 	/**
 	 * Solve with the function, guess and tolerance.
