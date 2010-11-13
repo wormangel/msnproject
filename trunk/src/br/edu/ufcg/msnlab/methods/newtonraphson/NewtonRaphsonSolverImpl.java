@@ -14,7 +14,6 @@ import br.edu.ufcg.msnlab.misc.Function;
  */
 public class NewtonRaphsonSolverImpl implements NewtonRaphsonSolver {
 	
-	private double root = Double.NaN;
     private double tolerance = 0;
     private double maxIterations = 3000;
 	
@@ -44,7 +43,6 @@ public class NewtonRaphsonSolverImpl implements NewtonRaphsonSolver {
             
             diff = f[0]/f[1];
             if(f[0]==0.0D || Math.abs(diff)<this.tolerance || iterN>this.maxIterations-1){
-                this.root = guess;
                 testConv=false;
             }
             else{
