@@ -19,7 +19,7 @@ import br.edu.ufcg.msnlab.misc.FunctionImpl;
 
 public class MassTimeDiff {
 
-	private static final String FUNCTIONS_FILE = "C:\\Users\\otacilio\\Desktop\\functions.txt";
+	private static final String FUNCTIONS_FILE = "C:\\func.txt";
 	private static DefaultTableModel model;
 	private static JFrame frame;
 
