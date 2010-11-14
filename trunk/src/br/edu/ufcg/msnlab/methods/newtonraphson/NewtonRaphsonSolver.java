@@ -5,7 +5,7 @@ package br.edu.ufcg.msnlab.methods.newtonraphson;
 
 import java.util.List;
 
-import br.edu.ufcg.msnlab.methods.Solver;
+import br.edu.ufcg.msnlab.methods.GuessSolver;
 import br.edu.ufcg.msnlab.misc.Function;
 
 
@@ -20,7 +20,7 @@ import br.edu.ufcg.msnlab.misc.Function;
  * @author Alvaro Magnum
  * @author Marcus Leite
  */
-public interface NewtonRaphsonSolver extends Solver<NewtonRaphsonResult> {
+public interface NewtonRaphsonSolver extends GuessSolver<NewtonRaphsonResult> {
 
     /**
      * Solve with the function, guess and tolerance.

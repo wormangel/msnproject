@@ -5,7 +5,7 @@ package br.edu.ufcg.msnlab.methods.secant;
 
 import java.util.List;
 
-import br.edu.ufcg.msnlab.methods.Solver;
+import br.edu.ufcg.msnlab.methods.MinMaxSolver;
 import br.edu.ufcg.msnlab.misc.Function;
 
 
@@ -18,7 +18,7 @@ import br.edu.ufcg.msnlab.misc.Function;
  * @author Rodrigo Barbosa
  * @author Samuel de Barros
  */
-public interface SecantSolver extends Solver<SecantResult> {
+public interface SecantSolver extends MinMaxSolver<SecantResult> {
 
     /**
      * TODO

@@ -2,14 +2,14 @@ package br.edu.ufcg.msnlab.methods.petkovic;
 
 import java.util.List;
 
-import br.edu.ufcg.msnlab.methods.Solver;
+import br.edu.ufcg.msnlab.methods.GuessSolver;
 import br.edu.ufcg.msnlab.misc.Function;
 
 /**
  * @author Otacilio Freitas de Lacerda
  * @author Lucas Medeiros de Azevedo.
  */
-public interface PetkovicSolver extends Solver<PetkovicResult> {
+public interface PetkovicSolver extends GuessSolver<PetkovicResult> {
 
     /**
      * Solve with the function, guess and tolerance.

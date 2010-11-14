@@ -6,7 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +45,9 @@ import br.edu.ufcg.msnlab.gui.output.FrameOutput;
 import br.edu.ufcg.msnlab.gui.plotter.FramePlotter;
 import br.edu.ufcg.msnlab.gui.util.JDecimalField;
 import br.edu.ufcg.msnlab.gui.util.JNumberField;
+import br.edu.ufcg.msnlab.methods.GuessSolver;
 import br.edu.ufcg.msnlab.methods.Methods;
+import br.edu.ufcg.msnlab.methods.MinMaxSolver;
 import br.edu.ufcg.msnlab.methods.bissec.BissecResult;
 import br.edu.ufcg.msnlab.methods.bissec.BissecSolver;
 import br.edu.ufcg.msnlab.methods.bissec.BissecSolverImpl;
@@ -435,911 +439,306 @@ public class FrameInput extends JInternalFrame {
 
 	}
 
+	protected void batchSolveGuess(GuessSolver solver) throws InvalidFunctionException, IOException {
+		BufferedReader reader = new BufferedReader(new FileReader(new File(BATCH_FILE)));
+		String linha;
+		
+		if (fieldGuess.getText().trim().equals("")) {
+			msnlab.showError("Guess cannot be empty.");
+			return;
+		} else {
+			ArrayList<BatchResult> results = new ArrayList<BatchResult>();
+			JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
+			
+			double tolerance = Double.parseDouble(fieldTolerance
+					.getText());
+			double min = Double.parseDouble(fieldMin.getText());
+			double max = Double.parseDouble(fieldMax.getText());
+			long tempInicial, tempFinal, r, diff;
+			int iterations = 0;
+			try {
+				iterations = Integer.parseInt(fieldIteration.getText());
+			} catch (Exception e) {
+			}
+			
+			double guess = Double.parseDouble(fieldGuess.getText());
+			
+			while ((linha = reader.readLine()) != null) {
+				
+				FunctionImpl function = new FunctionImpl(linha);
+
+				try {
+					
+					if (iterations == 0) {
+						
+						tempInicial = System.currentTimeMillis();
+						solver.solve(function, guess, tolerance);
+						tempFinal = System.currentTimeMillis();
+						diff = tempFinal - tempInicial;
+						
+					} else {
+						
+						tempInicial = System.currentTimeMillis();
+						solver.solve(function, guess, tolerance, iterations);
+						tempFinal = System.currentTimeMillis();
+						diff = tempFinal - tempInicial;
+						
+					}
+					
+					BatchResult result = new BatchResultImpl(function, diff);
+					results.add(result);
+
+				} catch (Exception e) {
+					results.add(new BatchResultImpl(function, -1));
+				}
+			}
+			FrameOutput fo = new FrameOutput(msnlab);
+			BatchTableModel btm = new BatchTableModel(results);
+			fo.setModel(btm);
+			fo.setLocation(new Point(0, 250));
+			msnlab.openComponent(fo);
+		}
+	}
+	
+	protected void batchSolveFixedPoint() throws InvalidFunctionException, IOException{
+		if (fieldGuess.getText().trim().equals("")) {
+			msnlab.showError("Guess cannot be empty.");
+			return;
+		} else {
+			BufferedReader reader = new BufferedReader(new FileReader(new File(BATCH_FILE)));
+			String linha;
+			ArrayList<BatchResult> results = new ArrayList<BatchResult>();
+			JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
+			
+			double tolerance = Double.parseDouble(fieldTolerance
+					.getText());
+			double min = Double.parseDouble(fieldMin.getText());
+			double max = Double.parseDouble(fieldMax.getText());
+			long tempInicial, tempFinal, r, diff;
+			int iterations = 0;
+			try {
+				iterations = Integer.parseInt(fieldIteration.getText());
+			} catch (Exception e) {
+			}
+			
+			double guess = Double.parseDouble(fieldGuess.getText());
+			
+			while ((linha = reader.readLine()) != null) {
+				
+				FunctionImpl function = new FunctionImpl(linha);
+
+				FixedPointSolver bs = new FixedPointSolverImpl(function);
+
+				try {
+					
+					if (iterations == 0) {
+						
+						tempInicial = System.currentTimeMillis();
+						bs.solve(function, new FunctionImpl(
+								fieldItFunction.getText()), guess,
+								tolerance);
+						tempFinal = System.currentTimeMillis();
+						diff = tempFinal - tempInicial;
+						
+					} else {
+						
+						tempInicial = System.currentTimeMillis();
+						bs.solve(function, new FunctionImpl(
+								fieldItFunction.getText()), guess,
+								tolerance, iterations);
+						tempFinal = System.currentTimeMillis();
+						diff = tempFinal - tempInicial;
+						
+					}
+					
+					BatchResult result = new BatchResultImpl(function, diff);
+					results.add(result);
+					
+					
+					
+				} catch (Exception e) {
+					results.add(new BatchResultImpl(function, -1));
+				}
+			}
+			FrameOutput fo = new FrameOutput(msnlab);
+			BatchTableModel btm = new BatchTableModel(results);
+			fo.setModel(btm);
+			fo.setLocation(new Point(0, 250));
+			msnlab.openComponent(fo);
+		}
+	}
+	
+	protected void batchSolveMuller() throws InvalidFunctionException, IOException{
+		if (fieldX0.getText().trim().equals("")
+				|| fieldX1.getText().trim().equals("")
+				|| fieldX2.getText().trim().equals("")) {
+			msnlab.showError("X0, X1 and X2 cannot be empty.");
+			return;
+		} else {
+			BufferedReader reader = new BufferedReader(new FileReader(new File(BATCH_FILE)));
+			String linha;
+			ArrayList<BatchResult> results = new ArrayList<BatchResult>();
+			JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
+			
+			double tolerance = Double.parseDouble(fieldTolerance
+					.getText());
+			double x0 = Double.parseDouble(fieldX0.getText());
+			double x1 = Double.parseDouble(fieldX1.getText());
+			double x2 = Double.parseDouble(fieldX2.getText());
+			int iterations = 0;
+			try {
+				iterations = Integer.parseInt(fieldIteration.getText());
+			} catch (Exception e) {
+			}
+			
+			long tempInicial, tempFinal, r, diff;
+			
+			while ((linha = reader.readLine()) != null) {
+				
+				FunctionImpl function = new FunctionImpl(linha);
+
+				MullerSolver bs = new MullerSolverImpl();
+
+				try {
+					
+					if (iterations == 0) {
+						
+						tempInicial = System.currentTimeMillis();
+						bs.solve(function, x0, x1, x2, tolerance);
+						tempFinal = System.currentTimeMillis();
+						diff = tempFinal - tempInicial;
+						
+					} else {
+						
+						tempInicial = System.currentTimeMillis();
+						bs.solve(function, x0, x1, x2, tolerance, iterations);
+						tempFinal = System.currentTimeMillis();
+						diff = tempFinal - tempInicial;
+						
+					}
+					
+					BatchResult result = new BatchResultImpl(function, diff);
+					results.add(result);
+
+				} catch (Exception e) {
+					results.add(new BatchResultImpl(function, -1));
+				}
+			}
+			FrameOutput fo = new FrameOutput(msnlab);
+			BatchTableModel btm = new BatchTableModel(results);
+			fo.setModel(btm);
+			fo.setLocation(new Point(0, 250));
+			msnlab.openComponent(fo);
+		}
+	}
+	
+	protected void batchSolveMinMax(MinMaxSolver solver) throws InvalidFunctionException, IOException{
+		BufferedReader reader = new BufferedReader(new FileReader(new File(BATCH_FILE)));
+		String linha;
+		
+		if (fieldMin.getText().trim().equals("")
+				|| fieldMax.getText().trim().equals("")) {
+			msnlab.showError("Min and Max cannot be empty.");
+			return;
+		} else {
+			ArrayList<BatchResult> results = new ArrayList<BatchResult>();
+			JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
+			
+			double tolerance = Double.parseDouble(fieldTolerance
+					.getText());
+			double min = Double.parseDouble(fieldMin.getText());
+			double max = Double.parseDouble(fieldMax.getText());
+			long tempInicial, tempFinal, r, diff;
+			int iterations = 0;
+			try {
+				iterations = Integer.parseInt(fieldIteration.getText());
+			} catch (Exception e) {}
+			
+			while ((linha = reader.readLine()) != null) {
+				FunctionImpl function = new FunctionImpl(linha);
+	
+				try {
+	
+					if (iterations == 0) {
+						
+						tempInicial = System.currentTimeMillis();
+						solver.solve(function, min, max, tolerance);
+						tempFinal = System.currentTimeMillis();
+						diff = tempFinal - tempInicial;
+						
+					} else {
+						
+						tempInicial = System.currentTimeMillis();
+						solver.solve(function, min, max, tolerance,
+								iterations);
+						tempFinal = System.currentTimeMillis();
+						diff = tempFinal - tempInicial;
+						
+					}
+					
+					BatchResult result = new BatchResultImpl(function, diff);
+					results.add(result);
+		
+				} catch (Exception e) {
+					results.add(new BatchResultImpl(function, -1));
+				}
+			}
+			FrameOutput fo = new FrameOutput(msnlab);
+			BatchTableModel btm = new BatchTableModel(results);
+			fo.setModel(btm);
+			fo.setLocation(new Point(0, 250));
+			msnlab.openComponent(fo);
+		}
+		
+	}
+	
 	protected void batchSolver() {
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(new File(
-					BATCH_FILE)));
-			String linha;
-			
 			String method = (String) comboMethods.getSelectedItem();
-			
-				if (method.equals(Methods.BISECTION)){
-					if (fieldMin.getText().trim().equals("")
-							|| fieldMax.getText().trim().equals("")) {
-						msnlab.showError("Min and Max cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double min = Double.parseDouble(fieldMin.getText());
-						double max = Double.parseDouble(fieldMax.getText());
-						long tempInicial, tempFinal, r, diff;
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-
-							BissecSolver bs = new BissecSolverImpl();
-				
-							try {
-
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance,
-											iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-								
-								
-								
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				} else if (method.equals(Methods.BUSM)) {
-					if (fieldMin.getText().trim().equals("")
-							|| fieldMax.getText().trim().equals("")) {
-						msnlab.showError("Min and Max cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double min = Double.parseDouble(fieldMin.getText());
-						double max = Double.parseDouble(fieldMax.getText());
-						long tempInicial, tempFinal, r, diff;
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-							
-							BusAlgorithmMSolver bs = new BusAlgorithmMSolverImpl();
-
-							try {
-
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance,
-											iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-								
-								
-								
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				} else if (method.equals(Methods.BUSR)) {
-					if (fieldMin.getText().trim().equals("")
-							|| fieldMax.getText().trim().equals("")) {
-						msnlab.showError("Min and Max cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double min = Double.parseDouble(fieldMin.getText());
-						double max = Double.parseDouble(fieldMax.getText());
-						long tempInicial, tempFinal, r, diff;
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-
-							BusAlgorithmRSolver bs = new BusAlgorithmRSolverImpl();
-
-							try {
-
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance,
-											iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-								
-								
-								
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				} else if (method.equals(Methods.DEKKER)) {
-					if (fieldMin.getText().trim().equals("")
-							|| fieldMax.getText().trim().equals("")) {
-						msnlab.showError("Min and Max cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double min = Double.parseDouble(fieldMin.getText());
-						double max = Double.parseDouble(fieldMax.getText());
-						long tempInicial, tempFinal, r, diff;
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-
-							DekkerSolver bs = new DekkerSolverImpl();
-
-							try {
-
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance,
-											iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-								
-								
-								
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				} else if (method.equals(Methods.FALSEPOSITION)) {
-					if (fieldMin.getText().trim().equals("")
-							|| fieldMax.getText().trim().equals("")) {
-						msnlab.showError("Min and Max cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double min = Double.parseDouble(fieldMin.getText());
-						double max = Double.parseDouble(fieldMax.getText());
-						long tempInicial, tempFinal, r, diff;
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-							
-							FalsePositionSolver bs = new FalsePositionSolverImpl();
-
-							try {
-
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance,
-											iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-								
-								
-								
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				} else if (method.equals(Methods.FIXEDPOINT)) {
-					if (fieldGuess.getText().trim().equals("")) {
-						msnlab.showError("Guess cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double min = Double.parseDouble(fieldMin.getText());
-						double max = Double.parseDouble(fieldMax.getText());
-						long tempInicial, tempFinal, r, diff;
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						double guess = Double.parseDouble(fieldGuess.getText());
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-
-							FixedPointSolver bs = new FixedPointSolverImpl(function);
-
-							try {
-								
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, new FunctionImpl(
-											fieldItFunction.getText()), guess,
-											tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, new FunctionImpl(
-											fieldItFunction.getText()), guess,
-											tolerance, iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-								
-								
-								
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				} else if (method.equals(Methods.GOLDENRATIO)) {
-					if (fieldMin.getText().trim().equals("")
-							|| fieldMax.getText().trim().equals("")) {
-						msnlab.showError("Min and Max cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double min = Double.parseDouble(fieldMin.getText());
-						double max = Double.parseDouble(fieldMax.getText());
-						long tempInicial, tempFinal, r, diff;
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-
-							GoldenRatioSolver bs = new GoldenRatioSolverImpl();
-
-							try {
-
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance,
-											iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-								
-								
-								
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				} else if (method.equals(Methods.LAGUERRE)) {
-					if (fieldGuess.getText().trim().equals("")) {
-						msnlab.showError("Guess cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double min = Double.parseDouble(fieldMin.getText());
-						double max = Double.parseDouble(fieldMax.getText());
-						long tempInicial, tempFinal, r, diff;
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						double guess = Double.parseDouble(fieldGuess.getText());
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-
-							LaguerreSolver bs = new LaguerreSolverImpl();
-
-							try {
-								
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, guess, tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, guess, tolerance, iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				} else if (method.equals(Methods.MODIFIEDFALSEPOSITION)) {
-					if (fieldGuess.getText().trim().equals("")) {
-						msnlab.showError("Guess cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double min = Double.parseDouble(fieldMin.getText());
-						double max = Double.parseDouble(fieldMax.getText());
-						long tempInicial, tempFinal, r, diff;
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-
-							FalsePositionModifiedSolver bs = new FalsePositionModifiedSolverImpl();
-
-							try {
-								
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance, iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-	
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				} else if (method.equals(Methods.MULLER)) {
-					if (fieldX0.getText().trim().equals("")
-							|| fieldX1.getText().trim().equals("")
-							|| fieldX2.getText().trim().equals("")) {
-						msnlab.showError("X0, X1 and X2 cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double x0 = Double.parseDouble(fieldX0.getText());
-						double x1 = Double.parseDouble(fieldX1.getText());
-						double x2 = Double.parseDouble(fieldX2.getText());
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						long tempInicial, tempFinal, r, diff;
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-
-							MullerSolver bs = new MullerSolverImpl();
-
-							try {
-								
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, x0, x1, x2, tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, x0, x1, x2, tolerance, iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				} else if (method.equals(Methods.NEWTONRAPHSON)) {
-					if (fieldGuess.getText().trim().equals("")) {
-						msnlab.showError("Guess cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double min = Double.parseDouble(fieldMin.getText());
-						double max = Double.parseDouble(fieldMax.getText());
-						long tempInicial, tempFinal, r, diff;
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						double guess = Double.parseDouble(fieldGuess.getText());
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-
-							NewtonRaphsonSolver bs = new NewtonRaphsonSolverImpl();
-
-							try {
-								
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, guess, tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, guess, tolerance, iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				} else if (method.equals(Methods.RIDDERS)) {
-					if (fieldMin.getText().trim().equals("")
-							|| fieldMax.getText().trim().equals("")) {
-						msnlab.showError("Min and Max cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double min = Double.parseDouble(fieldMin.getText());
-						double max = Double.parseDouble(fieldMax.getText());
-						long tempInicial, tempFinal, r, diff;
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-
-							RiddersSolver bs = new RiddersSolverImpl();
-
-							try {
-
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance,
-											iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-								
-								
-								
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				} else if (method.equals(Methods.SECANT)) {
-					if (fieldMin.getText().trim().equals("")
-							|| fieldMax.getText().trim().equals("")) {
-						msnlab.showError("Min and Max cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double min = Double.parseDouble(fieldMin.getText());
-						double max = Double.parseDouble(fieldMax.getText());
-						long tempInicial, tempFinal, r, diff;
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-
-							SecantSolver bs = new SecantSolverImpl();
-
-							try {
-
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance,
-											iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-								
-								
-								
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				} else if (method.equals(Methods.VANWIJNGAARDENDEKKERBRENT)) {
-					if (fieldMin.getText().trim().equals("")
-							|| fieldMax.getText().trim().equals("")) {
-						msnlab.showError("Min and Max cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double min = Double.parseDouble(fieldMin.getText());
-						double max = Double.parseDouble(fieldMax.getText());
-						long tempInicial, tempFinal, r, diff;
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-
-							BrentSolver bs = new WijngaardenDekerBrentSolver();
-
-							try {
-
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, min, max, tolerance,
-											iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-								
-								
-								
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				} else if (method.equals(Methods.PETKOVIC)) {
-					if (fieldGuess.getText().trim().equals("")) {
-						msnlab.showError("Guess cannot be empty.");
-						return;
-					} else {
-						ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-						JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
-						
-						double tolerance = Double.parseDouble(fieldTolerance
-								.getText());
-						double min = Double.parseDouble(fieldMin.getText());
-						double max = Double.parseDouble(fieldMax.getText());
-						long tempInicial, tempFinal, r, diff;
-						int iterations = 0;
-						try {
-							iterations = Integer.parseInt(fieldIteration.getText());
-						} catch (Exception e) {
-						}
-						
-						double guess = Double.parseDouble(fieldGuess.getText());
-						
-						while ((linha = reader.readLine()) != null) {
-							
-							FunctionImpl function = new FunctionImpl(linha);
-
-							PetkovicSolver bs = new PetkovicSolverImpl();
-
-							try {
-								
-								if (iterations == 0) {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, guess, tolerance);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								} else {
-									
-									tempInicial = System.currentTimeMillis();
-									bs.solve(function, guess, tolerance, iterations);
-									tempFinal = System.currentTimeMillis();
-									diff = tempFinal - tempInicial;
-									
-								}
-								
-								BatchResult result = new BatchResultImpl(function, diff);
-								results.add(result);
-
-							} catch (Exception e) {
-								results.add(new BatchResultImpl(function, -1));
-							}
-						}
-						FrameOutput fo = new FrameOutput(msnlab);
-						BatchTableModel btm = new BatchTableModel(results);
-						fo.setModel(btm);
-						fo.setLocation(new Point(0, 250));
-						msnlab.openComponent(fo);
-					}
-				}
-				
-				
+			if (method.equals(Methods.BISECTION)){
+				BissecSolver solver = new BissecSolverImpl();
+				batchSolveMinMax(solver);
+			} else if (method.equals(Methods.BUSM)) {
+				BusAlgorithmMSolver solver = new BusAlgorithmMSolverImpl();
+				batchSolveMinMax(solver);
+			} else if (method.equals(Methods.BUSR)) {
+				BusAlgorithmRSolver solver = new BusAlgorithmRSolverImpl();
+				batchSolveMinMax(solver);
+			} else if (method.equals(Methods.DEKKER)) {
+				DekkerSolver solver = new DekkerSolverImpl();
+				batchSolveMinMax(solver);
+			} else if (method.equals(Methods.FALSEPOSITION)) {
+				FalsePositionSolver solver = new FalsePositionSolverImpl();
+				batchSolveMinMax(solver);
+			} else if (method.equals(Methods.FIXEDPOINT)) {
+				batchSolveFixedPoint();
+			} else if (method.equals(Methods.GOLDENRATIO)) {
+				GoldenRatioSolver solver = new GoldenRatioSolverImpl();
+				batchSolveMinMax(solver);
+			} else if (method.equals(Methods.LAGUERRE)) {
+				LaguerreSolver solver = new LaguerreSolverImpl();
+				batchSolveGuess(solver);
+			} else if (method.equals(Methods.MODIFIEDFALSEPOSITION)) {
+				FalsePositionModifiedSolver solver = new FalsePositionModifiedSolverImpl();
+				batchSolveMinMax(solver);
+			} else if (method.equals(Methods.MULLER)) {
+				batchSolveMuller();
+			} else if (method.equals(Methods.NEWTONRAPHSON)) {
+				NewtonRaphsonSolver solver = new NewtonRaphsonSolverImpl();
+				batchSolveGuess(solver);
+			} else if (method.equals(Methods.RIDDERS)) {
+				RiddersSolver solver = new RiddersSolverImpl();
+				batchSolveMinMax(solver);
+			} else if (method.equals(Methods.SECANT)) {
+				SecantSolver solver = new SecantSolverImpl();
+				batchSolveMinMax(solver);
+			} else if (method.equals(Methods.VANWIJNGAARDENDEKKERBRENT)) {
+				BrentSolver solver = new WijngaardenDekerBrentSolver();
+				batchSolveMinMax(solver);
+			} else if (method.equals(Methods.PETKOVIC)) {
+				PetkovicSolver solver = new PetkovicSolverImpl();
+				batchSolveGuess(solver);
+			}
 		} catch (Exception ex){
 		}
 	}

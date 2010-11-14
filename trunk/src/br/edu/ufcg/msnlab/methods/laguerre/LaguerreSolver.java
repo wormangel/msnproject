@@ -5,7 +5,7 @@ package br.edu.ufcg.msnlab.methods.laguerre;
 
 import java.util.List;
 
-import br.edu.ufcg.msnlab.methods.Solver;
+import br.edu.ufcg.msnlab.methods.GuessSolver;
 import br.edu.ufcg.msnlab.misc.Function;
 
 
@@ -18,7 +18,7 @@ import br.edu.ufcg.msnlab.misc.Function;
  * @author Rodrigo Barbosa
  * @author Samuel de Barros
  */
-public interface LaguerreSolver extends Solver<LaguerreResult> {
+public interface LaguerreSolver extends GuessSolver<LaguerreResult> {
 
     /**
      * TODO
