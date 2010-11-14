@@ -5,7 +5,7 @@ package br.edu.ufcg.msnlab.methods.wijngaardenDekerBrent;
 
 import java.util.List;
 
-import br.edu.ufcg.msnlab.methods.Solver;
+import br.edu.ufcg.msnlab.methods.MinMaxSolver;
 import br.edu.ufcg.msnlab.misc.Function;
 
 
@@ -20,7 +20,7 @@ import br.edu.ufcg.msnlab.misc.Function;
  * @author Gabriel Feitosa
  * @author Rafael Pessoa
  */
-public interface BrentSolver extends Solver<BrentResult> {
+public interface BrentSolver extends MinMaxSolver<BrentResult> {
 
     /**
      * TODO

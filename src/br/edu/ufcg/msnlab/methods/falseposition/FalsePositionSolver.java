@@ -5,7 +5,7 @@ package br.edu.ufcg.msnlab.methods.falseposition;
 
 import java.util.List;
 
-import br.edu.ufcg.msnlab.methods.Solver;
+import br.edu.ufcg.msnlab.methods.MinMaxSolver;
 import br.edu.ufcg.msnlab.misc.Function;
 
 
@@ -23,7 +23,7 @@ import br.edu.ufcg.msnlab.misc.Function;
  * @author Samuel de Barros
  *
  */
-public interface FalsePositionSolver extends Solver<FalsePositionResult> {
+public interface FalsePositionSolver extends MinMaxSolver<FalsePositionResult> {
 
 	/**
 	 * TODO

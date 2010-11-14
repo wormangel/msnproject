@@ -2,7 +2,7 @@ package br.edu.ufcg.msnlab.methods.dekker;
 
 import java.util.List;
 
-import br.edu.ufcg.msnlab.methods.Solver;
+import br.edu.ufcg.msnlab.methods.MinMaxSolver;
 import br.edu.ufcg.msnlab.misc.Function;
 
 
@@ -11,7 +11,7 @@ import br.edu.ufcg.msnlab.misc.Function;
  * @author Edigley Pereira Fraga
  * @author Jaindson Valentim Santana
  */
-public interface DekkerSolver extends Solver<DekkerResult> {
+public interface DekkerSolver extends MinMaxSolver<DekkerResult> {
 
     List<DekkerResult> solve(Function funcion, double min, double max,
             double tolerance) throws DekkerException;
