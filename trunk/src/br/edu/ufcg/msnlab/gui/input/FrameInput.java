@@ -149,6 +149,8 @@ public class FrameInput extends JInternalFrame {
 	private JButton buttonPlot;
 	private JButton buttonSolve;
 	private JButton buttonBatch;
+	
+	private JFileChooser batchFileChooser;
 
 	public FrameInput(MSNLab msnlab) {
 		super("Solve Equation");
@@ -224,6 +226,10 @@ public class FrameInput extends JInternalFrame {
 		textItFunction.setVisible(false);
 		fieldItFunction.setVisible(false);
 
+		batchFileChooser = new JFileChooser();
+		batchFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Text files (*.txt)", "txt"));//(filtro);
+		batchFileChooser.setDialogTitle("Select batch file");
+		batchFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 	}
 
 	private JComboBox makeComboMethods() {
@@ -453,8 +459,7 @@ public class FrameInput extends JInternalFrame {
 			
 			double tolerance = Double.parseDouble(fieldTolerance
 					.getText());
-			double min = Double.parseDouble(fieldMin.getText());
-			double max = Double.parseDouble(fieldMax.getText());
+
 			long tempInicial, tempFinal, r, diff;
 			int iterations = 0;
 			try {
@@ -513,8 +518,7 @@ public class FrameInput extends JInternalFrame {
 			
 			double tolerance = Double.parseDouble(fieldTolerance
 					.getText());
-			double min = Double.parseDouble(fieldMin.getText());
-			double max = Double.parseDouble(fieldMax.getText());
+
 			long tempInicial, tempFinal, r, diff;
 			int iterations = 0;
 			try {
@@ -696,20 +700,13 @@ public class FrameInput extends JInternalFrame {
 	protected void batchSolver() {
 		try {
 			String path = "";
-			JFileChooser chooser = new JFileChooser();
 			
-			// Se quiser definir uma lista de extensões para que ele só mostre os arquivos com
-			// essa determinada extensão, cria um filtro e add o filtro como abaixo.
-			//FileNameExtensionFilter filtro = new FileNameExtensionFilter("Descrição", "extensão");
-			chooser.addChoosableFileFilter(null); //(filtro);
-
-			chooser.setDialogTitle("Titulo");
-			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			int valorRetorno = chooser.showOpenDialog(this);
+			int valorRetorno = batchFileChooser.showOpenDialog(this);
 			if (valorRetorno == JFileChooser.APPROVE_OPTION) {
-				path = chooser.getSelectedFile().getPath();
+				path = batchFileChooser.getSelectedFile().getPath();
+			} else {
+				return;
 			}
-			System.out.println(path);
 			
 			String method = (String) comboMethods.getSelectedItem();
 			if (method.equals(Methods.BISECTION)){
