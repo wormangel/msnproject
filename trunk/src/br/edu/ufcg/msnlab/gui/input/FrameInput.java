@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,6 +13,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -22,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import br.edu.ufcg.msnlab.InvalidFunctionException;
 import br.edu.ufcg.msnlab.gui.MSNLab;
@@ -694,6 +695,22 @@ public class FrameInput extends JInternalFrame {
 	
 	protected void batchSolver() {
 		try {
+			String path = "";
+			JFileChooser chooser = new JFileChooser();
+			
+			// Se quiser definir uma lista de extensões para que ele só mostre os arquivos com
+			// essa determinada extensão, cria um filtro e add o filtro como abaixo.
+			//FileNameExtensionFilter filtro = new FileNameExtensionFilter("Descrição", "extensão");
+			chooser.addChoosableFileFilter(null); //(filtro);
+
+			chooser.setDialogTitle("Titulo");
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			int valorRetorno = chooser.showOpenDialog(this);
+			if (valorRetorno == JFileChooser.APPROVE_OPTION) {
+				path = chooser.getSelectedFile().getPath();
+			}
+			System.out.println(path);
+			
 			String method = (String) comboMethods.getSelectedItem();
 			if (method.equals(Methods.BISECTION)){
 				BissecSolver solver = new BissecSolverImpl();
