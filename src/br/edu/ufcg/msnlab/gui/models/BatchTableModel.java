@@ -70,7 +70,7 @@ public class BatchTableModel extends AbstractTableModel {
         case FUNCTION:
             return "Function";
         case TIME:
-            return "Time";
+            return "Time (milisegundos)";
 
         }
         return "";
