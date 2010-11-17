@@ -457,7 +457,6 @@ public class FrameInput extends JInternalFrame {
 			return;
 		} else {
 			ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-			JOptionPane.showMessageDialog(this, "Source file: " + batchFile);
 			
 			double tolerance = Double.parseDouble(fieldTolerance
 					.getText());
@@ -516,7 +515,6 @@ public class FrameInput extends JInternalFrame {
 			BufferedReader reader = new BufferedReader(new FileReader(new File(batchFile)));
 			String linha;
 			ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-			JOptionPane.showMessageDialog(this, "Source file: " + batchFile);
 			
 			double tolerance = Double.parseDouble(fieldTolerance
 					.getText());
@@ -585,7 +583,6 @@ public class FrameInput extends JInternalFrame {
 			BufferedReader reader = new BufferedReader(new FileReader(new File(batchFile)));
 			String linha;
 			ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-			JOptionPane.showMessageDialog(this, "Source file: " + batchFile);
 			
 			double tolerance = Double.parseDouble(fieldTolerance
 					.getText());
@@ -649,7 +646,6 @@ public class FrameInput extends JInternalFrame {
 			return;
 		} else {
 			ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-			JOptionPane.showMessageDialog(this, "Source file: " + batchFile);
 			
 			double tolerance = Double.parseDouble(fieldTolerance
 					.getText());
