@@ -108,7 +108,6 @@ public class FrameInput extends JInternalFrame {
 	/**
 	 * 
 	 */
-	private static final String BATCH_FILE = "C:\\func.txt";
 	
 	private static final long serialVersionUID = -4714939028473804954L;
 	private JPanel panelButtons;
@@ -151,6 +150,7 @@ public class FrameInput extends JInternalFrame {
 	private JButton buttonBatch;
 	
 	private JFileChooser batchFileChooser;
+	private String batchFile;
 
 	public FrameInput(MSNLab msnlab) {
 		super("Solve Equation");
@@ -230,6 +230,8 @@ public class FrameInput extends JInternalFrame {
 		batchFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Text files (*.txt)", "txt"));//(filtro);
 		batchFileChooser.setDialogTitle("Select batch file");
 		batchFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		
+		batchFile = "";
 	}
 
 	private JComboBox makeComboMethods() {
@@ -447,7 +449,7 @@ public class FrameInput extends JInternalFrame {
 	}
 
 	protected void batchSolveGuess(GuessSolver solver) throws InvalidFunctionException, IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(new File(BATCH_FILE)));
+		BufferedReader reader = new BufferedReader(new FileReader(new File(batchFile)));
 		String linha;
 		
 		if (fieldGuess.getText().trim().equals("")) {
@@ -455,7 +457,7 @@ public class FrameInput extends JInternalFrame {
 			return;
 		} else {
 			ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-			JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
+			JOptionPane.showMessageDialog(this, "Source file: " + batchFile);
 			
 			double tolerance = Double.parseDouble(fieldTolerance
 					.getText());
@@ -511,10 +513,10 @@ public class FrameInput extends JInternalFrame {
 			msnlab.showError("Guess cannot be empty.");
 			return;
 		} else {
-			BufferedReader reader = new BufferedReader(new FileReader(new File(BATCH_FILE)));
+			BufferedReader reader = new BufferedReader(new FileReader(new File(batchFile)));
 			String linha;
 			ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-			JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
+			JOptionPane.showMessageDialog(this, "Source file: " + batchFile);
 			
 			double tolerance = Double.parseDouble(fieldTolerance
 					.getText());
@@ -580,10 +582,10 @@ public class FrameInput extends JInternalFrame {
 			msnlab.showError("X0, X1 and X2 cannot be empty.");
 			return;
 		} else {
-			BufferedReader reader = new BufferedReader(new FileReader(new File(BATCH_FILE)));
+			BufferedReader reader = new BufferedReader(new FileReader(new File(batchFile)));
 			String linha;
 			ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-			JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
+			JOptionPane.showMessageDialog(this, "Source file: " + batchFile);
 			
 			double tolerance = Double.parseDouble(fieldTolerance
 					.getText());
@@ -638,7 +640,7 @@ public class FrameInput extends JInternalFrame {
 	}
 	
 	protected void batchSolveMinMax(MinMaxSolver solver) throws InvalidFunctionException, IOException{
-		BufferedReader reader = new BufferedReader(new FileReader(new File(BATCH_FILE)));
+		BufferedReader reader = new BufferedReader(new FileReader(new File(batchFile)));
 		String linha;
 		
 		if (fieldMin.getText().trim().equals("")
@@ -647,7 +649,7 @@ public class FrameInput extends JInternalFrame {
 			return;
 		} else {
 			ArrayList<BatchResult> results = new ArrayList<BatchResult>();
-			JOptionPane.showMessageDialog(this, "Source file: " + BATCH_FILE);
+			JOptionPane.showMessageDialog(this, "Source file: " + batchFile);
 			
 			double tolerance = Double.parseDouble(fieldTolerance
 					.getText());
@@ -699,11 +701,10 @@ public class FrameInput extends JInternalFrame {
 	
 	protected void batchSolver() {
 		try {
-			String path = "";
 			
 			int valorRetorno = batchFileChooser.showOpenDialog(this);
 			if (valorRetorno == JFileChooser.APPROVE_OPTION) {
-				path = batchFileChooser.getSelectedFile().getPath();
+				batchFile = batchFileChooser.getSelectedFile().getPath();
 			} else {
 				return;
 			}
